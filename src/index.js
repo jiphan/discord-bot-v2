@@ -8,7 +8,6 @@ client.on('ready', () => {
 
 client.on('message', msg => {
     if (msg.content === 'ping') msg.reply('pong!')
-    if (msg.content === 'kill') client.destroy()
     if (msg.content === 'reset') client.destroy().then(() => client.login(keys.discord_bot_token))
 })
 
