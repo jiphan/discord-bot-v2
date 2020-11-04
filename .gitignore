@@ -105,3 +105,4 @@ dist
 
 # client secret files
 src/keys.json
+awskeypair.pem
