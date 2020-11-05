@@ -8,11 +8,6 @@ client.on('ready', () => {
 
 client.on('message', msg => {
     if (msg.content === 'ping') msg.reply('pong!')
-    if (msg.content === 'reset') {
-        msg.channel.send('Resetting...')
-        .then(() => client.destroy())
-        .then(() => client.login(keys.discord_bot_token))
-    }
     if (msg.content === 'marco') msg.reply('polo!')
 })
 
