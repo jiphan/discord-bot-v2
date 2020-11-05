@@ -13,9 +13,7 @@ client.on('message', msg => {
         .then(() => client.destroy())
         .then(() => client.login(keys.discord_bot_token))
     }
-    if (msg.content === 'kill') {
-        client.destroy()
-    }
+    if (msg.content === 'marco') msg.reply('polo!')
 })
 
 client.login(keys.discord_bot_token)
