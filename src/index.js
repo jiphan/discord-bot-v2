@@ -8,8 +8,7 @@ client.on('ready', () => {
 
 client.on('message', msg => {
     if (msg.content === 'ping') msg.reply('pong!')
-    if (msg.content === 'some') msg.reply('thing?')
-    //
+    if (msg.content === 'marco') msg.reply('polo!')
 })
 
 client.login(keys.discord_bot_token)
