@@ -8,7 +8,7 @@ client.on('ready', () => {
 
 client.on('message', msg => {
     if (msg.content === 'ping') msg.reply('pong!')
-    if (msg.content === 'marco') msg.reply('polo!')
+    if (msg.content === 'some') msg.reply('thing?')
     //
 })
 
