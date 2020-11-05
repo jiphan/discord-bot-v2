@@ -10,8 +10,11 @@ client.on('message', msg => {
     if (msg.content === 'ping') msg.reply('pong!')
     if (msg.content === 'reset') {
         msg.channel.send('Resetting...')
-        .then(msg => client.destroy())
+        .then(() => client.destroy())
         .then(() => client.login(keys.discord_bot_token))
+    }
+    if (msg.content === 'kill') {
+        client.destroy()
     }
 })
 
