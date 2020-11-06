@@ -12,5 +12,5 @@ client.on('message', msg => {
     if (msg.content === 'ping') msg.reply('pong!')
     if (!msg.content.startsWith('!')) return
     let args = msg.content.substring(1).split(' ')
-    msg.reply(functions.ascension(args[0], args[1], args[2]))
+    console.log(functions.ascension(args[0], args[1], args[2]))
 })

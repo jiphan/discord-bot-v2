@@ -7,8 +7,9 @@ let asc = {
 }
 
 function ascension(character = 'Character', current, target) {
-    if (!(current >= 1 && current <= 90 || current in asc || current)) {
-        console.log("didn't get that, defaulting current to a0")
+    let text = []
+    if (!(current >= 1 && current <= 90 || current in asc) || !current) {
+        text.push("didn't get that, defaulting current to a0")
         current = 'a0'
     }
 
@@ -17,21 +18,26 @@ function ascension(character = 'Character', current, target) {
     let req_exp = 1195925
 
     if (current_lvl !== target_lvl) {
-        console.log(character, current_asc, `(${current_lvl}/${asc[current_asc][1]})`)
-        console.log(
+        text.push([
+            character, current_asc, `(${current_lvl}/${asc[current_asc][1]})`
+        ].join(' '))
+        text.push([
             `${current_lvl} -> ${target_lvl}`,
             `= ${req_exp.toLocaleString()} exp`,
             `= ${(req_exp/2e4).toFixed(2).toLocaleString()} purple books`,
             `+ ${(req_exp/5).toLocaleString()} mora`
-        )
+        ].join(' '))
     }
     
     if (current_asc !== target_asc) {
-        aws.awsGet('genshin_ascension', target_asc, data => {
+        aws.awsGet('genshin_ascension', target_asc).then(data=> {
             console.log(data.Item)
+            text.push(data.Item.mora)
+            return text.join('\n') 
         })
+    } else {
+        return text.join('\n')
     }
-    return 'test'
 }
 
 function currentSituation(current) {
@@ -65,13 +71,6 @@ function targetSituation(target, current_asc) {
     }
     return [target_asc, target_lvl]
 }
-
-function main() {
-    ascension(process.argv[2], process.argv[3])
-}
-main()
-
-
 module.exports = {
     ascension
 }
