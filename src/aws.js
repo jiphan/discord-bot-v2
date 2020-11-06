@@ -4,22 +4,40 @@ const keys = require('./keys.json')
 AWS.config.credentials = new AWS.Credentials(keys.AWSAccessKeyId, keys.AWSSecretKey)
 AWS.config.update({ region: 'us-east-2' })
 
-async function awsGet(table, key, callback) {
-    var params = {
+async function awsGet(table, key) {
+    return await new AWS.DynamoDB.DocumentClient().get({
         TableName: table,
         Key: {
             'ascension': key
         }
-    }
-    new AWS.DynamoDB.DocumentClient().get(params, (err, data) => {
-        if (err) {
-            console.error('Error:',JSON.stringify(err, null, 2))
-        } else {
-            // console.log('Success:', JSON.stringify(data, null, 2))
-            return data
-        }
-    })
+    }).promise()
 }
+
+async function awsPut(table, i) {
+    return await new AWS.DynamoDB.DocumentClient().put({
+        TableName: table,
+        Item: i
+    }).promise()
+}
+
+async function awsCreate(table, key, type) {
+    return await new AWS.DynamoDB().createTable({
+        TableName: table,
+        KeySchema: [
+            { AttributeName: key, KeyType: 'HASH' }
+        ],
+        AttributeDefinitions: [
+            { AttributeName: key, AttributeType: type }
+        ],
+        ProvisionedThroughput: {
+            ReadCapacityUnits: 1,
+            WriteCapacityUnits: 1
+        }
+    }).promise()
+}
+
 module.exports = {
-    awsGet
+    awsGet,
+    awsPut,
+    awsCreate
 }

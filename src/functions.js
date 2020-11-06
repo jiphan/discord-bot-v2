@@ -1,76 +1,27 @@
+const fs = require('fs')
 const aws = require('./aws.js')
 
-let asc = { 
-    a0: [1, 20], 
-    a1: [20, 40], a2: [40, 50], a3: [50, 60], 
-    a4: [60, 70], a5: [70, 80], a6: [80, 90]
-}
+const timer = ms => new Promise(res => setTimeout(res, ms))
 
-function ascension(character = 'Character', current, target) {
-    let text = []
-    if (!(current >= 1 && current <= 90 || current in asc) || !current) {
-        text.push("didn't get that, defaulting current to a0")
-        current = 'a0'
-    }
-
-    let [current_asc, current_lvl] = currentSituation(current.toLocaleLowerCase())
-    let [target_asc, target_lvl] = targetSituation(target, current_asc)
-    let req_exp = 1195925
-
-    if (current_lvl !== target_lvl) {
-        text.push([
-            character, current_asc, `(${current_lvl}/${asc[current_asc][1]})`
-        ].join(' '))
-        text.push([
-            `${current_lvl} -> ${target_lvl}`,
-            `= ${req_exp.toLocaleString()} exp`,
-            `= ${(req_exp/2e4).toFixed(2).toLocaleString()} purple books`,
-            `+ ${(req_exp/5).toLocaleString()} mora`
-        ].join(' '))
-    }
-    
-    if (current_asc !== target_asc) {
-        aws.awsGet('genshin_ascension', target_asc).then(data=> {
-            console.log(data.Item)
-            text.push(data.Item.mora)
-            return text.join('\n') 
-        })
-    } else {
-        return text.join('\n')
-    }
-}
-
-function currentSituation(current) {
-    let current_asc, current_lvl
-    if (!isNaN(current)) {
-        current_lvl = parseInt(current)
-        for (let i in asc) {
-            if (current_lvl <= asc[i][1]) {
-                current_asc = i
-                break
+async function main(filename, table) {
+    fs.readFile(filename, async (err, data) => {
+        let obj = []
+        let arr = data.toString().split('\n')
+        let head = arr[0].split(',')
+        for (let i = 1; i < arr.length; i++) {
+            let row = arr[i].split(',')
+            let o = {}
+            for (let j = 0; j < row.length; j++) {
+                let val = row[j].trim()
+                val = isNaN(val) ? val : parseInt(val)
+                o[head[j].trim()] = val
             }
+            obj.push(o)
         }
-    } else {
-        current_asc = current
-        current_lvl = asc[current_asc][0]
-    }
-    return [current_asc, current_lvl]
-}
-
-function targetSituation(target, current_asc) {
-    let target_asc, target_lvl
-    if (!target) {
-        let i = parseInt(current_asc.substr(1))
-        i < 6 ? i++ : i
-        target_asc = 'a' + i
-        target_lvl = asc[current_asc][1]
-    } else {
-        for (let i in asc) {
-            //
+        for (let i of obj) {
+            aws.awsPut(table, i)
+            await timer(500)
         }
-    }
-    return [target_asc, target_lvl]
+    })
 }
-module.exports = {
-    ascension
-}
+main('exp.csv', 'genshin_exp')
