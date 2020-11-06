@@ -31,6 +31,7 @@ function ascension(character = 'Character', current, target) {
             console.log(data.Item)
         })
     }
+    return 'test'
 }
 
 function currentSituation(current) {
