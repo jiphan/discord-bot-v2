@@ -24,4 +24,11 @@ async function main(filename, table) {
         }
     })
 }
-main('exp.csv', 'genshin_exp')
+// main('exp.csv', 'genshin_exp')
+async function something() {
+    console.log(await aws.awsScanBetween('genshin_exp', 'level', 1, 20, 'exp'))
+}
+// something()
+aws.awsScanBetween('genshin_exp', 'level', 80, 89, 'exp').then(res => {
+    console.log(res.Items.map(i => i.exp).reduce((prev, next) => prev + next))
+})

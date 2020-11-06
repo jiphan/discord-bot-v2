@@ -36,8 +36,24 @@ async function awsCreate(table, key, type) {
     }).promise()
 }
 
+async function awsScanBetween(table, key, start, end, val) {
+    return await new AWS.DynamoDB.DocumentClient().scan({
+        TableName: table,
+        ProjectionExpression: val,
+        FilterExpression: '#a between :start and :end',
+        ExpressionAttributeNames: {
+            '#a': key
+        },
+        ExpressionAttributeValues: {
+            ':start': start,
+            ':end': end
+        }
+    }).promise()
+}
+
 module.exports = {
     awsGet,
     awsPut,
-    awsCreate
+    awsCreate,
+    awsScanBetween
 }

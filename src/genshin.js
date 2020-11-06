@@ -15,7 +15,9 @@ async function ascension(character = 'Character', current, target) {
 
     let [current_asc, current_lvl] = currentSituation(current.toLocaleLowerCase())
     let [target_asc, target_lvl] = targetSituation(target, current_asc)
-    let req_exp = 1195925
+
+    let res = await aws.awsScanBetween('genshin_exp', 'level', current_lvl, target_lvl - 1, 'exp')
+    let req_exp = res.Items.map(i => i.exp).reduce((prev, next) => prev + next)
 
     if (current_lvl !== target_lvl) {
         text.push([
