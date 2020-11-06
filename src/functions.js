@@ -70,3 +70,7 @@ function main() {
 }
 main()
 
+
+module.exports = {
+    ascension
+}
