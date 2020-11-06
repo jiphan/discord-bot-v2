@@ -6,10 +6,6 @@ let asc = {
     a4: [60, 70], a5: [70, 80], a6: [80, 90]
 }
 
-async function main() {
-    console.log(await ascension(process.argv[2], process.argv[3], process.argv[4]))
-}
-
 async function ascension(character = 'Character', current, target) {
     let text = []
     if (!(current >= 1 && current <= 90 || current in asc) || !current) {

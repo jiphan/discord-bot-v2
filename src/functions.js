@@ -20,7 +20,7 @@ async function main(filename, table) {
         }
         for (let i of obj) {
             aws.awsPut(table, i)
-            await timer(500)
+            await timer(1000)
         }
     })
 }
