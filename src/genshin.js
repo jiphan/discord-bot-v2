@@ -8,14 +8,15 @@ let asc = {
 
 async function ascension(character = 'Character', current, target) {
     let text = []
-    if (!(current >= 1 && current <= 90 || current in asc) || !current) {
+    if (!(current >= 1 && current <= 90 || current in asc)) {
         text.push("didn't get that, defaulting current to a0")
         current = 'a0'
     }
 
-    let [current_asc, current_lvl] = currentSituation(current.toLocaleLowerCase())
+    let [current_asc, current_lvl] = currentSituation(current)
     let [target_asc, target_lvl] = targetSituation(target, current_asc)
 
+    console.log('curlvl, tarlvl:', current_lvl, target_lvl)
     let res = await aws.awsScanBetween('genshin_exp', 'level', current_lvl, target_lvl - 1, 'exp')
     let req_exp = res.Items.map(i => i.exp).reduce((prev, next) => prev + next)
 
@@ -23,18 +24,23 @@ async function ascension(character = 'Character', current, target) {
         text.push([
             character, 
             current_asc, 
-            `(${current_lvl}/${asc[current_asc][1]})`
+            `(${current_lvl}/${asc[current_asc][1]})`,
+            `to hit level cap:`
         ].join(' '))
         text.push([
             `${current_lvl} -> ${target_lvl}`,
             `= ${req_exp.toLocaleString()} exp`,
             `= ${(req_exp/2e4).toFixed(2).toLocaleString()} purple books`,
-            `+ ${(req_exp/5).toLocaleString()} mora`,
-            `to hit level cap`
+            `+ ${(req_exp/5).toLocaleString()} mora`
         ].join(' '))
     }
     
     if (current_asc !== target_asc) {
+        text.push([
+            character,
+            current_asc,
+            'to ascend:'
+        ].join(' '))
         // let something = await aws.awsGet('genshin_ascension', target_asc)
         // text.push(something.Item.mora)
     }
@@ -66,9 +72,14 @@ function targetSituation(target, current_asc) {
         target_asc = 'a' + i
         target_lvl = asc[current_asc][1]
     } else {
+        //handle number
         for (let i in asc) {
-            //
+            if (i === target) {
+                target_lvl = asc[i][0]
+                target_asc = target
+            }
         }
+        //handle string
     }
     return [target_asc, target_lvl]
 }
