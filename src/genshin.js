@@ -6,26 +6,24 @@ let asc = {
     a4: [60, 70], a5: [70, 80], a6: [80, 90]
 }
 
-async function ascension(character = 'Character', current, target) {
-    let text = []
+async function ascension(character, current, target) {
+    let text = ['']
     if (!(current >= 1 && current <= 90 || current in asc)) {
-        text.push("didn't get that, defaulting current to a0")
         current = 'a0'
-    } else text.push('')
+    }
 
+    character = characterName(character)
     let [current_asc, current_lvl] = currentSituation(current)
     let [target_asc, target_lvl] = targetSituation(target, current_asc)
-
-    let res = await aws.awsScanBetween('genshin_exp', 'level', current_lvl, target_lvl - 1, 'exp')
-    let req_exp = res.Items.map(i => i.exp).reduce((prev, next) => prev + next)
 
     if (current_lvl < target_lvl) {
         text.push([
             character, 
             current_asc, 
-            `(${current_lvl}/${asc[current_asc][1]})`,
-            `to hit level cap:`
+            `(${current_lvl}/${asc[current_asc][1]})`
         ].join(' '))
+        let res = await aws.awsScanBetween('genshin_exp', 'level', current_lvl, target_lvl - 1, 'exp')
+        let req_exp = res.Items.map(i => i.exp).reduce((prev, next) => prev + next)
         text.push([
             `${current_lvl} -> ${target_lvl}`,
             `= ${req_exp.toLocaleString()} exp`,
@@ -37,11 +35,9 @@ async function ascension(character = 'Character', current, target) {
     if (current_asc !== target_asc) {
         text.push([
             character,
-            current_asc,
-            'to ascend:'
+            current_asc
         ].join(' '))
-        // let something = await aws.awsGet('genshin_ascension', target_asc)
-        // text.push(something.Item.mora)
+        text.push((await aws.awsGet('genshin_ascension', target_asc)))
     }
     return text.join('\n')
 }
@@ -86,6 +82,55 @@ function targetSituation(target, current_asc) {
     }
     return [target_asc, target_lvl]
 }
+
+function characterName(char) {
+    switch(char.toLowerCase()) {
+        case 'amber': return 'Amber'
+        case 'barbara': return 'Barbara'
+        case 'beidou': return 'Beidou'
+        case 'bennet': return 'Bennet'
+        case 'pit':
+        case 'childe': return 'Childe'
+        case 'chongyun': return 'Chongyun'
+        case 'darknighthero': case 'batman':
+        case 'diluc': return 'Diluc'
+        case 'diona': return 'Diona'
+        case 'fish':
+        case 'fischl': return 'Fischl'
+        case 'dandeliontights': case 'dandelion':
+        case 'jean': return 'Jean'
+        case 'kaeyak': case 'kayak':
+        case 'kaeya': return 'Kaeya'
+        case 'keqing': return 'Keqing'
+        case 'fireloli':
+        case 'klee': return 'Klee'
+        case 'lisa': return 'Lisa'
+        case 'mona': return 'Mona'
+        case 'ninguang':
+        case 'ningguang': return 'Ningguang'
+        case '2b':
+        case 'noelle': return 'Noelle'
+        case 'iceloli': case 'nana': case '77':
+        case 'qiqi': return 'Qiqi'
+        case 'razor': return 'Razor'
+        case 'c12h22o11':
+        case 'sucrose': return 'Sucrose'
+        case 'lumine': case 'ying': case 'hotaru':
+        case 'aether': case 'kong': case 'sora':
+        case 'traveller':
+        case 'traveler': return 'Traveler'
+        case 'barbatos':
+        case 'venti': return 'Venti'
+        case 'xiangling': return 'Xiangling'
+        case 'xiao': return 'Xiao'
+        case 'xingqiu': return 'Xingqiu'
+        case 'xinyan': return 'Xinyan'
+        case 'geochad': case 'geodaddy':
+        case 'zhongli': return 'Zhongli'
+        default: return 'Character'
+    }
+}
+
 module.exports = {
     ascension
 }
